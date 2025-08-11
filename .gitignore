@@ -1,0 +1,24 @@
+# Build results
+Backend/[Dd]ebug/
+Backend/[Dd]ebugPublic/
+Backend/bin
+Backend/obj/
+Backend/[Ll]og/
+Backend/[Ll]ogs/
+
+# NuGet Packages
+Backend/*.nupkg
+# NuGet Symbol Packages
+Backend/*.snupkg
+
+# NUnit
+Backend/*.VisualState.xml
+Backend/TestResult.xml
+Backend/nunit-*.xml
+
+.env
+
+# IDE's
+.idea/
+.vscode/
+.DS_Store
