@@ -20,7 +20,7 @@ app.MapPost("/users", async (User user, UserDb db) =>
     db.Users.Add(user);
     await db.SaveChangesAsync();
 
-    return Results.Created($"/auth/register/{user.Id}", user);
+    return Results.Created($"/users/{user.Id}", user);
 });
 
 app.MapGet("/users", async (UserDb db) => await db.Users.ToListAsync());
@@ -32,6 +32,7 @@ app.MapPut("/users/{id:int}", async (int id, User user, UserDb db) =>
 {
     db.Users.Update(user);
     await db.SaveChangesAsync();
+    return Results.Ok(user.Id);
 });
 
 app.MapPatch("/users/{id:int}", async (int id, UserDb db, Dictionary<string, object> updates) =>
