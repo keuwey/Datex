@@ -15,7 +15,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/auth/register", async (User user, UserDb db) =>
+app.MapPost("/users", async (User user, UserDb db) =>
 {
     db.Users.Add(user);
     await db.SaveChangesAsync();
@@ -23,18 +23,18 @@ app.MapPost("/auth/register", async (User user, UserDb db) =>
     return Results.Created($"/auth/register/{user.Id}", user);
 });
 
-app.MapGet("/auth/users", async (UserDb db) => await db.Users.ToListAsync());
+app.MapGet("/users", async (UserDb db) => await db.Users.ToListAsync());
 
-app.MapGet("/auth/users/{id}", async (int id, UserDb db) =>
+app.MapGet("/users/{id:int}", async (int id, UserDb db) =>
     await db.Users.FindAsync(id) is User user ? Results.Ok(user) : Results.NotFound());
 
-app.MapPut("/auth/users/{id}", async (int id, User user, UserDb db) =>
+app.MapPut("/users/{id:int}", async (int id, User user, UserDb db) =>
 {
     db.Users.Update(user);
     await db.SaveChangesAsync();
 });
 
-app.MapPatch("/auth/users/{id}", async (int id, UserDb db, Dictionary<string, object> updates) =>
+app.MapPatch("/users/{id:int}", async (int id, UserDb db, Dictionary<string, object> updates) =>
 {
     var user = await db.Users.FindAsync(id);
     if (user is null)
@@ -60,7 +60,7 @@ app.MapPatch("/auth/users/{id}", async (int id, UserDb db, Dictionary<string, ob
     return Results.Ok(user);
 });
 
-app.MapDelete("/auth/users/{id}", async (int id, UserDb db) =>
+app.MapDelete("/users/{id:int}", async (int id, UserDb db) =>
 {
     var user = await db.Users.FindAsync(id);
     if (user is null)
