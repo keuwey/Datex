@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 public static class CrudExtensions
 {
     public static void MapCrud<T>(this WebApplication app, string route) where T : class

@@ -1,5 +1,5 @@
+using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDb>(opt => opt.UseInMemoryDatabase("AppDb"));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
