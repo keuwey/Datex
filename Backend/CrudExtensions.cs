@@ -11,11 +11,9 @@ public static class CrudExtensions
             return Results.Created($"/{route}/{idProp}", entity);
         });
 
-        app.MapGet($"/{route}", async (AppDb db) =>
-            await db.Set<T>().ToListAsync());
+        app.MapGet($"/{route}", async (AppDb db) => await db.Set<T>().ToListAsync());
 
-        app.MapGet($"/{route}/{{id:int}}", async (int id, AppDb db) =>
-            await db.Set<T>().FindAsync(id) is T entity ? Results.Ok(entity) : Results.NotFound());
+        app.MapGet($"/{route}/{{id:int}}", async (int id, AppDb db) => await db.Set<T>().FindAsync(id) is T entity ? Results.Ok(entity) : Results.NotFound());
 
         app.MapPut($"/{route}/{{id:int}}", async (int id, T entity, AppDb db) =>
         {
@@ -77,9 +75,7 @@ public static class CrudExtensions
         app.MapDelete($"/{route}/{{id:int}}", async (int id, AppDb db) =>
         {
             var entity = await db.Set<T>().FindAsync(id);
-            if (entity is null)
-                return Results.NotFound();
-
+            if (entity is null) return Results.NotFound();
             db.Set<T>().Remove(entity);
             await db.SaveChangesAsync();
             return Results.NoContent();
