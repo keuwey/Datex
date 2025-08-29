@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=AppDb.db";
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<AppDb>(opt => opt.UseInMemoryDatabase("AppDb"));
+builder.Services.AddDbContext<AppDb>(opt => opt.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
 
