@@ -24,6 +24,56 @@ public static class CrudExtensions
             return Results.Ok(id);
         });
 
+        app.MapPatch($"/{route}/{{id:int}}", async (int id, AppDb db, Dictionary<string, object> updates) =>
+        {
+            var entity = await db.Set<T>().FindAsync(id);
+            if (entity is null) return Results.NotFound();
+            if (entity is User user)
+            {
+                foreach (var entry in updates)
+                {
+                    switch (entry.Key.ToLower())
+                    {
+                        case "name":
+                            user.Name = entry.Value?.ToString();
+                            break;
+                        case "phone":
+                            user.Phone = entry.Value?.ToString();
+                            break;
+                        case "email":
+                            user.Email = entry.Value?.ToString();
+                            break;
+                        case "password":
+                            user.Password = entry.Value?.ToString();
+                            break;
+                    }
+                }
+
+                await db.SaveChangesAsync();
+                return Results.Ok(user);
+            }
+
+            if (entity is Client client)
+            {
+                foreach (var entry in updates)
+                {
+                    switch (entry.Key.ToLower())
+                    {
+                        case "name":
+                            client.Name = entry.Value?.ToString();
+                            break;
+                        case "phone":
+                            client.Phone = entry.Value?.ToString();
+                            break;
+                    }
+                }
+
+                await db.SaveChangesAsync();
+                return Results.Ok(client);
+            }
+            return Results.NoContent();
+        });
+
         app.MapDelete($"/{route}/{{id:int}}", async (int id, AppDb db) =>
         {
             var entity = await db.Set<T>().FindAsync(id);
