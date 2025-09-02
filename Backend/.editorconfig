@@ -1,0 +1,13 @@
+# Indica que este é o arquivo raiz
+root = true
+
+[*.cs]
+indent_style = space
+indent_size = 2
+
+# Colocar chaves na mesma linha
+csharp_new_line_before_open_brace = none
+
+# Regras adicionais (opcionais)
+csharp_prefer_braces = true:suggestion
+dotnet_sort_system_directives_first = true

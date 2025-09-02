@@ -1,1 +1,4 @@
-public class Client : PersonBase {}
+using System;
+namespace Backend;
+
+public class Client : PersonBase { }
