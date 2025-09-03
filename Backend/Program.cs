@@ -16,6 +16,7 @@ class Program {
     app.UseHttpsRedirection();
     app.MapCrud<User>("users");
     app.MapCrud<Client>("clients");
+    app.MapCrud<Product>("products");
     app.Run();
 
   }
