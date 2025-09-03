@@ -3,8 +3,7 @@ using System.Text.Json.Serialization;
 namespace Backend;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum Category
-{
+public enum Category {
   Hortifrúti,
   Açougue_Frios,
   Padaria_Confeitaria,

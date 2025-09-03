@@ -4,6 +4,10 @@ namespace Backend;
 
 public static class CrudExtensions {
   public static void MapCrud<T>(this WebApplication app, string route) where T : class {
+    app.MapGet($"/{route}", async (AppDb db) => await db.Set<T>().ToListAsync());
+
+    app.MapGet($"/{route}/{{id:int}}", async (int id, AppDb db) => await db.Set<T>().FindAsync(id) is T entity ? Results.Ok(entity) : Results.NotFound());
+
     app.MapPost($"/{route}", async (T entity, AppDb db) => {
       db.Set<T>().Add(entity);
       await db.SaveChangesAsync();
@@ -11,14 +15,17 @@ public static class CrudExtensions {
       return Results.Created($"/{route}/{idProp}", entity);
     });
 
-    app.MapGet($"/{route}", async (AppDb db) => await db.Set<T>().ToListAsync());
-
-    app.MapGet($"/{route}/{{id:int}}", async (int id, AppDb db) => await db.Set<T>().FindAsync(id) is T entity ? Results.Ok(entity) : Results.NotFound());
-
     app.MapPut($"/{route}/{{id:int}}", async (int id, T entity, AppDb db) => {
-      db.Set<T>().Update(entity);
+      var existing = await db.Set<T>().FindAsync(id);
+      if (existing is null) return Results.NotFound();
+
+      var idProp = typeof(T).GetProperty("Id");
+      if (idProp is not null) idProp.SetValue(entity, id);
+
+      db.Entry(existing).CurrentValues.SetValues(entity);
       await db.SaveChangesAsync();
-      return Results.Ok(id);
+
+      return Results.NoContent();
     });
 
     app.MapPatch($"/{route}/{{id:int}}", async (int id, AppDb db, Dictionary<string, object> updates) => {
