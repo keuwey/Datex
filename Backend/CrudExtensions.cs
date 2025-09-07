@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 namespace Backend;
@@ -7,16 +9,22 @@ public static class CrudExtensions {
   public static void MapCrud<T>(this WebApplication app, string route) where T : class {
     app.MapGet($"/{route}", async (AppDb db) => await db.Set<T>().ToListAsync());
 
-    app.MapGet($"/{route}/{{id:int}}", async (int id, AppDb db) => await db.Set<T>().FindAsync(id) is T entity ? Results.Ok(entity) : Results.NotFound());
+    app.MapGet($"/{route}/{{id:int}}", async (uint id, AppDb db) => await db.Set<T>().FindAsync(id) is T entity ? Results.Ok(entity) : Results.NotFound());
 
     app.MapPost($"/{route}", async (T entity, AppDb db) => {
       db.Set<T>().Add(entity);
       await db.SaveChangesAsync();
+      if (entity is Sale sale) {
+        var saved = await db.Sales
+          .Include(s => s.Items)
+          .FirstOrDefaultAsync(s => s.Id == sale.Id);
+        return Results.Created($"/sales/{sale.Id}", saved);
+      }
       var idProp = typeof(T).GetProperty("Id")?.GetValue(entity);
       return Results.Created($"/{route}/{idProp}", entity);
     });
 
-    app.MapPut($"/{route}/{{id:int}}", async (int id, T entity, AppDb db) => {
+    app.MapPut($"/{route}/{{id:int}}", async (uint id, T entity, AppDb db) => {
       var existing = await db.Set<T>().FindAsync(id);
       if (existing is null) return Results.NotFound();
 
@@ -29,7 +37,7 @@ public static class CrudExtensions {
       return Results.NoContent();
     });
 
-    app.MapPatch($"/{route}/{{id:int}}", async (int id, AppDb db, Dictionary<string, object> updates) => {
+    app.MapPatch($"/{route}/{{id:int}}", async (uint id, AppDb db, Dictionary<string, object> updates) => {
       var entity = await db.Set<T>().FindAsync(id);
       if (entity is null) return Results.NotFound();
 
@@ -78,7 +86,7 @@ public static class CrudExtensions {
               product.Name = entry.Value?.ToString();
               break;
             case "sku":
-              if (entry.Value is JsonElement skuElem && skuElem.ValueKind == JsonValueKind.Number) product.Sku = skuElem.GetInt32();
+              if (entry.Value is JsonElement skuElem && skuElem.ValueKind == JsonValueKind.Number) product.Sku = skuElem.GetUInt32();
               break;
             case "description":
               product.Description = entry.Value?.ToString();
@@ -90,10 +98,10 @@ public static class CrudExtensions {
               if (entry.Value is JsonElement priceElem && priceElem.ValueKind == JsonValueKind.Number) product.Price = priceElem.GetDecimal();
               break;
             case "stockquantity":
-              if (entry.Value is JsonElement stockElem && stockElem.ValueKind == JsonValueKind.Number) product.StockQuantity = stockElem.GetInt32();
+              if (entry.Value is JsonElement stockElem && stockElem.ValueKind == JsonValueKind.Number) product.StockQuantity = stockElem.GetUInt32();
               break;
             case "minimumstock":
-              if (entry.Value is JsonElement minStockElem && minStockElem.ValueKind == JsonValueKind.Number) product.MinimumStock = minStockElem.GetInt32();
+              if (entry.Value is JsonElement minStockElem && minStockElem.ValueKind == JsonValueKind.Number) product.MinimumStock = minStockElem.GetUInt32();
               break;
             case "productcategory":
               if (entry.Value is JsonElement catElem && catElem.ValueKind == JsonValueKind.String) {
@@ -101,8 +109,8 @@ public static class CrudExtensions {
                 if (Enum.TryParse<Category>(categoryStr, ignoreCase: true, out var parsedCategory)) product.ProductCategory = parsedCategory;
               }
               break;
-            case "urlimagem":
-              product.UrlImagem = entry.Value?.ToString();
+            case "urlimage":
+              product.UrlImage = entry.Value?.ToString();
               break;
             case "active":
               if (entry.Value is JsonElement activeElem && activeElem.ValueKind == JsonValueKind.True) product.Active = true;
@@ -116,7 +124,7 @@ public static class CrudExtensions {
       return Results.NoContent();
     });
 
-    app.MapDelete($"/{route}/{{id:int}}", async (int id, AppDb db) => {
+    app.MapDelete($"/{route}/{{id:int}}", async (uint id, AppDb db) => {
       var entity = await db.Set<T>().FindAsync(id);
       if (entity is null) return Results.NotFound();
       db.Set<T>().Remove(entity);

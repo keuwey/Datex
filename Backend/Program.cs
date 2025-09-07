@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 namespace Backend;
 
 class Program {
@@ -9,6 +11,7 @@ class Program {
     builder.Services.AddOpenApi();
     builder.Services.AddDbContext<AppDb>(opt => opt.UseSqlite(connectionString));
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+    builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
     var app = builder.Build();
 
     if (app.Environment.IsDevelopment()) app.MapOpenApi();
@@ -17,6 +20,7 @@ class Program {
     app.MapCrud<User>("users");
     app.MapCrud<Client>("clients");
     app.MapCrud<Product>("products");
+    app.MapCrud<Sale>("sales");
     app.Run();
 
   }

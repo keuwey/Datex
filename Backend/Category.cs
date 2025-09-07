@@ -2,21 +2,23 @@ using System;
 using System.Text.Json.Serialization;
 namespace Backend;
 
+// Para nomes em enums, sempre usar PascalCase e sem acentos, evitando assim problemas com serialização
+
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Category {
-  Hortifrúti,
-  Açougue_Frios,
-  Padaria_Confeitaria,
+  Hortifruti,
+  AcougueFrios,
+  PadariaConfeitaria,
   Bebidas,
-  Laticínios_Ovos,
+  LaticiniosOvos,
   Mercearia,
   Congelados,
   Limpeza,
   Higiene_Beleza,
-  Utilidades_Domésticas,
-  Bebês_Crianças,
-  Pet_Shop,
-  Calçados,
-  Eletrônicos,
+  UtilidadesDomesticas,
+  BebesCrianças,
+  PetShop,
+  Calcados,
+  Eletronicos,
   Livros
 }
