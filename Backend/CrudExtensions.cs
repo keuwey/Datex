@@ -7,9 +7,22 @@ namespace Backend;
 
 public static class CrudExtensions {
   public static void MapCrud<T>(this WebApplication app, string route) where T : class {
-    app.MapGet($"/{route}", async (AppDb db) => await db.Set<T>().ToListAsync());
+    app.MapGet($"/{route}", async (AppDb db) => {
+      if (typeof(T) == typeof(Sale)) {
+        var sales = await db.Sales.Include(s => s.Items).ThenInclude(i => i.Product).ToListAsync();
+        return Results.Ok(sales);
+      }
+      var entities = await db.Set<T>().ToListAsync();
+      return Results.Ok(entities);
+    });
 
-    app.MapGet($"/{route}/{{id:int}}", async (uint id, AppDb db) => await db.Set<T>().FindAsync(id) is T entity ? Results.Ok(entity) : Results.NotFound());
+    app.MapGet($"/{route}/{{id:int}}", async (uint id, AppDb db) => {
+      if (typeof(T) == typeof(Sale)) {
+        var sale = await db.Sales.Include(s => s.Items).ThenInclude(i => i.Product).FirstOrDefaultAsync(s => s.Id == id);
+        return sale is not null ? Results.Ok(sale) : Results.NotFound();
+      }
+      return await db.Set<T>().FindAsync(id) is T entity ? Results.Ok(entity) : Results.NotFound();
+    });
 
     app.MapPost($"/{route}", async (T entity, AppDb db) => {
       db.Set<T>().Add(entity);

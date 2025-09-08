@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 namespace Backend;
 
 class Program {
@@ -22,6 +22,5 @@ class Program {
     app.MapCrud<Product>("products");
     app.MapCrud<Sale>("sales");
     app.Run();
-
   }
 }

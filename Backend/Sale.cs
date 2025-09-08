@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 namespace Backend;
 
 
 public class Sale {
   public uint Id { get; private set; }
-  public uint ClientId { get; set; } // TODO: Solve the shadowing problem with EF. It seems that "ClientId" is already being used somewhere
+  public uint ClientId { get; set; }
   public Client? Client { get; set; }
   public DateTime DateHour { get; set; } = DateTime.Now;
-  [DatabaseGenerated(DatabaseGeneratedOption.Computed)] // TODO: search more about computed values. It seems to be related to my problem
-  public List<SaleItem> Items { get; set; } = new(); // TODO: not working
-  public decimal TotalValue => Items?.Sum(i => i.Subtotal) ?? 0; // not working
+  public List<SaleItem> Items { get; set; } = new();
+  public decimal TotalValue => Items?.Sum(i => i.Subtotal) ?? 0;
   public PaymentMethod PaymentMethod { get; set; }
   public string? Notes { get; set; }
-  public Status SaleStatus { get; set; } // Showing as "null" on sqlite
+  public Status SaleStatus { get; set; }
 }

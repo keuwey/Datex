@@ -4,7 +4,7 @@ namespace Backend;
 public class Product {
   public uint Id { get; private set; }
   public string? Name { get; set; }
-  public uint? Sku { get; set; } // Stock Keeping Unit. Numbers with 9 digits
+  public uint? Sku { get; set; } // Stock Keeping Unit. Numbers with 10 digits
   public string? Description { get; set; }
   public string? Brand { get; set; }
   public decimal? Price { get; set; }
